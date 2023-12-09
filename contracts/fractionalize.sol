@@ -32,5 +32,20 @@ contract FNFTToken is ERC20, Ownable, ERC20Permit, ERC721Holder {
         _mint(address(this), _amount); 
     }
 
+    function buy(uint256 _amount) external payable {
+        require(initialized, "Contract is not initialized");
+        require(msg.value > 0, "Send some MATIC");
+        uint256 tokenPrice = _amount;
+        require(msg.value >= tokenPrice, "Insufficient MATIC sent");
+
+        _transfer(address(this), msg.sender, _amount);
+        payable(owner()).transfer(msg.value); 
+    }
+
+    function withdraw() external onlyOwner {
+        uint256 balance = address(this).balance;
+        payable(owner()).transfer(balance); 
+    }
+
     receive() external payable {}
 } 
